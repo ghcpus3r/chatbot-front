@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chatbot Éducatif</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f9;
+      margin: 0;
+      padding: 20px;
+    }
+    .chat-container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .chat-box {
+      max-height: 400px;
+      overflow-y: auto;
+      border: 1px solid #ddd;
+      padding: 10px;
+      margin-bottom: 10px;
+      background: #f9f9f9;
+      border-radius: 4px;
+    }
+    .chat-message {
+      margin-bottom: 10px;
+    }
+    .user-message {
+      color: #333;
+    }
+    .bot-message {
+      color: #007BFF;
+    }
+    .chat-input {
+      display: flex;
+    }
+    input[type="text"] {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    button {
+      padding: 10px 20px;
+      background: #007BFF;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-container">
+    <h1>Chatbot Éducatif</h1>
+    <div class="chat-box" id="chat-box">
+      <!-- Les messages utilisateur et bot s'afficheront ici -->
+    </div>
+    <div class="chat-input">
+      <input type="text" id="user-input" placeholder="Pose une question..." />
+      <button onclick="sendMessage()">Envoyer</button>
+    </div>
+  </div>
+
+  <script>
+    async function sendMessage() {
+      // Récupérer le message de l'utilisateur
+      const userInput = document.getElementById("user-input").value;
+      if (!userInput.trim()) return;
+
+      // Afficher le message de l'utilisateur dans la boîte de chat
+      const chatBox = document.getElementById("chat-box");
+      chatBox.innerHTML += `<div class="chat-message user-message"><strong>Vous :</strong> ${userInput}</div>`;
+      document.getElementById("user-input").value = "";
+
+      // Envoyer le message au backend via l'API
+      try {
+        const response = await fetch("/chat", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ message: userInput })
+        });
+
+        const data = await response.json();
+        const botReply = data.reply;
+
+        // Afficher la réponse du bot dans la boîte de chat
+        chatBox.innerHTML += `<div class="chat-message bot-message"><strong>Bot :</strong> ${botReply}</div>`;
+        chatBox.scrollTop = chatBox.scrollHeight; // Faire défiler vers le bas
+      } catch (error) {
+        console.error("Erreur lors de la communication avec le serveur :", error);
+        chatBox.innerHTML += `<div class="chat-message bot-message"><strong>Bot :</strong> Une erreur est survenue. Réessayez plus tard.</div>`;
+      }
+    }
+  </script>
+</body>
+</html>
