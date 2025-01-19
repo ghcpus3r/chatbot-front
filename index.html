@@ -84,7 +84,7 @@
 
       // Envoyer le message au backend via l'API
       try {
-        const response = await fetch("/chat", {
+        const response = await fetch("https://chatbot-front-fawn.vercel.app/", {
           method: "POST",
           headers: {
             "Content-Type": "application/json"
